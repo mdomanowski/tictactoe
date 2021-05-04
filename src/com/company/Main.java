@@ -2,6 +2,7 @@ package com.company;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.Random;
 
 public class Main {
 
@@ -11,8 +12,9 @@ public class Main {
         System.out.println("| " + plansza[1][0] + " " + plansza[1][1] + " " + plansza[1][2] + " |");
         System.out.println("| " + plansza[2][0] + " " + plansza[2][1] + " " + plansza[2][2] + " |");
         System.out.println("---------");
-        }
-    public static void stanGry(char[][] plansza, int[] iloscX, int[] iloscO) {
+    }
+
+    public static boolean stanGry(char[][] plansza, int[] iloscX, int[] iloscO) {
         if (plansza[0][0] == 'X' && plansza[0][1] == 'X' && plansza[0][2] == 'X' ||
                 plansza[1][0] == 'X' && plansza[1][1] == 'X' && plansza[1][2] == 'X' ||
                 plansza[2][0] == 'X' && plansza[2][1] == 'X' && plansza[2][2] == 'X' ||
@@ -22,7 +24,7 @@ public class Main {
                 plansza[0][0] == 'X' && plansza[1][1] == 'X' && plansza[2][2] == 'X' ||
                 plansza[2][0] == 'X' && plansza[1][1] == 'X' && plansza[0][2] == 'X') {
             System.out.println("X wins");
-            return;
+            return true;
         } else if (plansza[0][0] == 'O' && plansza[0][1] == 'O' && plansza[0][2] == 'O' ||
                 plansza[1][0] == 'O' && plansza[1][1] == 'O' && plansza[1][2] == 'O' ||
                 plansza[2][0] == 'O' && plansza[2][1] == 'O' && plansza[2][2] == 'O' ||
@@ -32,14 +34,14 @@ public class Main {
                 plansza[0][0] == 'O' && plansza[1][1] == 'O' && plansza[2][2] == 'O' ||
                 plansza[2][0] == 'O' && plansza[1][1] == 'O' && plansza[0][2] == 'O') {
             System.out.println("O wins");
-            return;
+            return true;
         } else {
             if (iloscO[0] + iloscX[0] == 9) {
                 System.out.println("Draw");
-            } else {
-                System.out.println("Game not finished");
+                return true;
             }
         }
+        return false;
     }
     public static boolean ruch(int[] iloscX, int[] iloscO, char[][] plansza) {
         Scanner scanner = new Scanner(System.in);
@@ -73,47 +75,52 @@ public class Main {
             return false;
         }
 
-        if(iloscX[0] > iloscO[0]) {
-            plansza[coord1-1][coord2-1] = 'O';
-            iloscO[0]++;
-        } else if (iloscX[0] == iloscO[0]) {
-            plansza[coord1-1][coord2-1] = 'X';
-            iloscX[0]++;
-        }
+        plansza[coord1-1][coord2-1] = 'X';
+        iloscX[0]++;
         return true;
+    }
+    public static void ruchBota(int[] iloscO, int[] iloscX, char[][] plansza) {
+        System.out.println("Making move level \"easy\"");
+        Random random = new Random();
+        boolean wolny = false;
+        if (iloscO[0] + iloscX[0] == 9) {
+            return;
+        }
+        while (!wolny) {
+            int x = random.nextInt(3);
+            int y = random.nextInt(3);
+            if (plansza[x][y] != 'X' && plansza[x][y] != 'O') {
+                plansza[x][y] = 'O';
+                wolny = true;
+                iloscO[0]++;
+            }
+        }
     }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         char[][] plansza = new char[3][3];
-        System.out.print("Enter the cells: > ");
-        String pozycje = scanner.next();
-        int k = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                plansza[i][j] = ' ';
+            }
+        }
         int[] iloscX = new int[1];
         iloscX[0] = 0;
         int[] iloscO = new int[1];
         iloscO[0] = 0;
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (pozycje.charAt(k) == 'X') {
-                    iloscX[0]++;
-                } else if (pozycje.charAt(k) == 'O') {
-                    iloscO[0]++;
-                }
-
-                if (pozycje.charAt(k) == '_') {
-                    plansza[i][j] = ' ';
-                } else {
-                    plansza[i][j] = pozycje.charAt(k);
-                }
-                k++;
+        wyswietlPlansze(plansza);
+        while (!stanGry(plansza, iloscX, iloscO)) {
+            while (!ruch(iloscX, iloscO, plansza)) {
             }
+            wyswietlPlansze(plansza);
+            if (stanGry(plansza, iloscX, iloscO)) {
+                return;
+            }
+            ruchBota(iloscO, iloscX, plansza);
+            wyswietlPlansze(plansza);
+            stanGry(plansza, iloscX, iloscO);
         }
-        wyswietlPlansze(plansza);
-        while (ruch(iloscX, iloscO, plansza) == false) {
-        }
-        wyswietlPlansze(plansza);
-        stanGry(plansza, iloscX, iloscO);
     }
 }
 
