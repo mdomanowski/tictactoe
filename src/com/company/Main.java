@@ -75,8 +75,13 @@ public class Main {
             return false;
         }
 
-        plansza[coord1-1][coord2-1] = 'X';
-        iloscX[0]++;
+        if(iloscX[0] > iloscO[0]) {
+            plansza[coord1-1][coord2-1] = 'O';
+            iloscO[0]++;
+        } else if (iloscX[0] == iloscO[0]) {
+            plansza[coord1-1][coord2-1] = 'X';
+            iloscX[0]++;
+        }
         return true;
     }
     public static void ruchBota(int[] iloscO, int[] iloscX, char[][] plansza) {
@@ -90,9 +95,14 @@ public class Main {
             int x = random.nextInt(3);
             int y = random.nextInt(3);
             if (plansza[x][y] != 'X' && plansza[x][y] != 'O') {
-                plansza[x][y] = 'O';
+                if(iloscX[0] > iloscO[0]) {
+                    plansza[x][y] = 'O';
+                    iloscO[0]++;
+                } else if (iloscX[0] == iloscO[0]) {
+                    plansza[x][y] = 'X';
+                    iloscX[0]++;
+                }
                 wolny = true;
-                iloscO[0]++;
             }
         }
     }
@@ -109,17 +119,66 @@ public class Main {
         iloscX[0] = 0;
         int[] iloscO = new int[1];
         iloscO[0] = 0;
-        wyswietlPlansze(plansza);
-        while (!stanGry(plansza, iloscX, iloscO)) {
-            while (!ruch(iloscX, iloscO, plansza)) {
-            }
-            wyswietlPlansze(plansza);
-            if (stanGry(plansza, iloscX, iloscO)) {
+
+        String initial = "";
+        while (initial != "exit") {
+            System.out.print("Input command: ");
+            initial = scanner.nextLine();
+            if (("exit").equals(initial)) {
                 return;
             }
-            ruchBota(iloscO, iloscX, plansza);
-            wyswietlPlansze(plansza);
-            stanGry(plansza, iloscX, iloscO);
+
+            if (initial.contains("start easy easy")) {
+                wyswietlPlansze(plansza);
+                while (!stanGry(plansza, iloscX, iloscO)) {
+                    ruchBota(iloscO, iloscX, plansza);
+                    wyswietlPlansze(plansza);
+                    if (stanGry(plansza, iloscX, iloscO)) {
+                        break;
+                    }
+                    ruchBota(iloscO, iloscX, plansza);
+                    wyswietlPlansze(plansza);
+                }
+            } else if (initial.contains("start easy user")) {
+                wyswietlPlansze(plansza);
+                while (!stanGry(plansza, iloscX, iloscO)) {
+                    ruchBota(iloscO, iloscX, plansza);
+                    wyswietlPlansze(plansza);
+                    if (stanGry(plansza, iloscX, iloscO)) {
+                        break;
+                    }
+                    while (!ruch(iloscX, iloscO, plansza)) {
+                    }
+                    wyswietlPlansze(plansza);
+                }
+            } else if (initial.contains("start user easy")) {
+                wyswietlPlansze(plansza);
+                while (!stanGry(plansza, iloscX, iloscO)) {
+                    while (!ruch(iloscX, iloscO, plansza)) {
+                    }
+                    wyswietlPlansze(plansza);
+                    if (stanGry(plansza, iloscX, iloscO)) {
+                        break;
+                    }
+                    ruchBota(iloscO, iloscX, plansza);
+                    wyswietlPlansze(plansza);
+                }
+            } else if (initial.contains("start user user")) {
+                wyswietlPlansze(plansza);
+                while (!stanGry(plansza, iloscX, iloscO)) {
+                    while (!ruch(iloscX, iloscO, plansza)) {
+                    }
+                    wyswietlPlansze(plansza);
+                    if (stanGry(plansza, iloscX, iloscO)) {
+                        break;
+                    }
+                    while (!ruch(iloscX, iloscO, plansza)) {
+                    }
+                    wyswietlPlansze(plansza);
+                }
+            } else {
+                System.out.println("Bad parameters!");
+            }
         }
     }
 }
