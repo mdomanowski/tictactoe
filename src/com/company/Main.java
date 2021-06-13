@@ -308,7 +308,7 @@ public class Main {
         boolean result = stanGry(plansza, iloscX, iloscO);
 
         if (isMaximizing) {
-
+            System.out.println("ok");
         }
         return 1;
     }
