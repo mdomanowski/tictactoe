@@ -269,14 +269,14 @@ public class Main {
         if (iloscO[0] + iloscX[0] == 9) {
             return;
         }
-        char znacznik = 0;
-        char znacznikPrzeciwnik = 0;
+        char z = 0;
+        char zP = 0;
         if (iloscX[0] > iloscO[0]) {
-            znacznik = 'O';
-            znacznikPrzeciwnik = 'X';
+            z = 'O';
+            zP = 'X';
         } else if (iloscX[0] == iloscO[0]) {
-            znacznik = 'X';
-            znacznikPrzeciwnik = 'O';
+            z = 'X';
+            zP = 'O';
         }
 
         int najlepszyWynik = Integer.MIN_VALUE;
@@ -286,8 +286,8 @@ public class Main {
         for (int i = 0; i < 3; i++ ) {
             for (int j = 0; j < 3; j++) {
                 if (plansza[i][j] != 'X' && plansza[i][j] != 'O'){
-                    plansza[i][j] = znacznik;
-                    wynik = minimax(plansza, 0, true, iloscX, iloscO);
+                    plansza[i][j] = z;
+                    wynik = minimax(plansza, 0, true, iloscX, iloscO, z, zP);
                     plansza[i][j] = ' ';
                     if (wynik > najlepszyWynik) {
                         najlepszyWynik = wynik;
@@ -297,20 +297,53 @@ public class Main {
                 }
             }
         }
-        plansza[NajlepszyRuch.i][NajlepszyRuch.j] = znacznik;
-        if (znacznik == 'X') {
+        plansza[NajlepszyRuch.i][NajlepszyRuch.j] = z;
+        if (z == 'X') {
             iloscX[0]++;
-        } else if (znacznik == 'O') {
+        } else if (z == 'O') {
             iloscO[0]++;
         }
     }
-    public static int minimax(char[][] plansza, int depth, boolean isMaximizing, int[] iloscX, int[] iloscO) {
+    public static int minimax(char[][] plansza, int depth, boolean isMaximizing, int[] iloscX, int[] iloscO, char z, char zP) {
         boolean result = stanGry(plansza, iloscX, iloscO);
 
-        if (isMaximizing) {
-            System.out.println("ok");
+        if (result) {
+
         }
-        return 1;
+
+        if (isMaximizing) {
+            int najlepszyWynik = Integer.MIN_VALUE;
+            int wynik;
+            for (int i = 0; i < 3; i++ ) {
+                for (int j = 0; j < 3; j++) {
+                    if (plansza[i][j] != 'X' && plansza[i][j] != 'O'){
+                        plansza[i][j] = z;
+                        wynik = minimax(plansza, depth + 1, false, iloscX, iloscO,z, zP);
+                        plansza[i][j] = ' ';
+                        if (wynik > najlepszyWynik) {
+                            najlepszyWynik = wynik;
+                        }
+                    }
+                }
+            }
+            return najlepszyWynik;
+        } else {
+            int najlepszyWynik = Integer.MAX_VALUE;
+            int wynik;
+            for (int i = 0; i < 3; i++ ) {
+                for (int j = 0; j < 3; j++) {
+                    if (plansza[i][j] != 'X' && plansza[i][j] != 'O'){
+                        plansza[i][j] = zP;
+                        wynik = minimax(plansza, depth + 1, true, iloscX, iloscO,z, zP);
+                        plansza[i][j] = ' ';
+                        if (wynik < najlepszyWynik) {
+                            najlepszyWynik = wynik;
+                        }
+                    }
+                }
+            }
+            return najlepszyWynik;
+        }
     }
     public class NajlepszyRuch {
         public static int i;
