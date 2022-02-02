@@ -3,6 +3,13 @@ package com.company;
 import java.util.Scanner;
 import java.util.Random;
 
+import com.company.iloscXO;
+import com.company.NajlepszyRuch;
+
+import static com.company.iloscXO.iloscO;
+import static com.company.iloscXO.iloscX;
+import static java.lang.Math.*;
+
 public class Main {
 
     public static void wyswietlPlansze(char[][] plansza) {
@@ -13,7 +20,7 @@ public class Main {
         System.out.println("---------");
     }
 
-    public static boolean stanGry(char[][] plansza, int[] iloscX, int[] iloscO) {
+    public static String stanGry(char[][] plansza) {
         if (plansza[0][0] == 'X' && plansza[0][1] == 'X' && plansza[0][2] == 'X' ||
                 plansza[1][0] == 'X' && plansza[1][1] == 'X' && plansza[1][2] == 'X' ||
                 plansza[2][0] == 'X' && plansza[2][1] == 'X' && plansza[2][2] == 'X' ||
@@ -22,8 +29,7 @@ public class Main {
                 plansza[0][2] == 'X' && plansza[1][2] == 'X' && plansza[2][2] == 'X' ||
                 plansza[0][0] == 'X' && plansza[1][1] == 'X' && plansza[2][2] == 'X' ||
                 plansza[2][0] == 'X' && plansza[1][1] == 'X' && plansza[0][2] == 'X') {
-            System.out.println("X wins");
-            return true;
+            return "X wins";
         } else if (plansza[0][0] == 'O' && plansza[0][1] == 'O' && plansza[0][2] == 'O' ||
                 plansza[1][0] == 'O' && plansza[1][1] == 'O' && plansza[1][2] == 'O' ||
                 plansza[2][0] == 'O' && plansza[2][1] == 'O' && plansza[2][2] == 'O' ||
@@ -32,18 +38,16 @@ public class Main {
                 plansza[0][2] == 'O' && plansza[1][2] == 'O' && plansza[2][2] == 'O' ||
                 plansza[0][0] == 'O' && plansza[1][1] == 'O' && plansza[2][2] == 'O' ||
                 plansza[2][0] == 'O' && plansza[1][1] == 'O' && plansza[0][2] == 'O') {
-            System.out.println("O wins");
-            return true;
+            return "O wins";
         } else {
-            if (iloscO[0] + iloscX[0] == 9) {
-                System.out.println("Draw");
-                return true;
+            if (iloscXO.getIloscO() + iloscXO.getIloscX() == 9) {
+                return "tie";
             }
         }
-        return false;
+        return "";
     }
 
-    public static boolean ruchGracza(int[] iloscX, int[] iloscO, char[][] plansza) {
+    public static boolean ruchGracza(char[][] plansza) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the coordinates: > ");
         String Coord1 = scanner.next();
@@ -85,7 +89,7 @@ public class Main {
         return false;
     }
 
-    public static void ruchBota(int[] iloscO, int[] iloscX, char[][] plansza) {
+    public static void ruchBota(char[][] plansza) {
         System.out.println("Making move level \"easy\"");
         Random random = new Random();
         boolean wolny = false;
@@ -108,7 +112,7 @@ public class Main {
         }
     }
 
-    public static void ruchBotaMedium(int[] iloscO, int[] iloscX, char[][] plansza) {
+    public static void ruchBotaMedium(char[][] plansza) {
         System.out.println("Making move level \"medium\"");
         Random random = new Random();
         boolean wolny = false;
@@ -246,7 +250,7 @@ public class Main {
 
     public static String goodInput() {
         Scanner scanner = new Scanner(System.in);
-        String initial;
+        String initial = null;
         while (true) {
             System.out.print("Input command: ");
             initial = scanner.nextLine();
@@ -254,40 +258,30 @@ public class Main {
                 return "exit";
             } else if (("start user user").equals(initial) || ("start user easy").equals(initial) || ("start easy user").equals(initial) ||
                     ("start easy easy").equals(initial) || ("start user medium").equals(initial) || ("start medium user").equals(initial) ||
-                    ("start medium easy").equals(initial) || ("start easy medium").equals(initial) || ("start medium medium").equals(initial)) {
+                    ("start medium easy").equals(initial) || ("start easy medium").equals(initial) || ("start medium medium").equals(initial) ||
+                    ("start hard user").equals(initial)) {
                 return initial;
             } else {
                 System.out.println("Bad coordinates!");
-                System.out.println(initial);
             }
         }
     }
 
-    public static void BestRuchBota(int[] iloscX, int[] iloscO, char[][] plansza) {
+    public static void BestRuchBota(char[][] plansza) {
         System.out.println("Making move level \"hard\"");
 
         if (iloscO[0] + iloscX[0] == 9) {
             return;
         }
-        char z = 0;
-        char zP = 0;
-        if (iloscX[0] > iloscO[0]) {
-            z = 'O';
-            zP = 'X';
-        } else if (iloscX[0] == iloscO[0]) {
-            z = 'X';
-            zP = 'O';
-        }
 
         int najlepszyWynik = Integer.MIN_VALUE;
-        int wynik;
 
         //funkcja minimax wylicza wynik dla każdego wolnego pola
-        for (int i = 0; i < 3; i++ ) {
+        for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (plansza[i][j] != 'X' && plansza[i][j] != 'O'){
-                    plansza[i][j] = z;
-                    wynik = minimax(plansza, 0, true, iloscX, iloscO, z, zP);
+                if (plansza[i][j] != 'X' && plansza[i][j] != 'O') {
+                    plansza[i][j] = 'X';
+                    int wynik = minimax(plansza, 0, false);
                     plansza[i][j] = ' ';
                     if (wynik > najlepszyWynik) {
                         najlepszyWynik = wynik;
@@ -297,69 +291,66 @@ public class Main {
                 }
             }
         }
-        plansza[NajlepszyRuch.i][NajlepszyRuch.j] = z;
-        if (z == 'X') {
+        /*if (iloscXO.znacznik() == 'X') {
+            plansza[NajlepszyRuch.i][NajlepszyRuch.j] = 'X';
             iloscX[0]++;
-        } else if (z == 'O') {
+        } else if (iloscXO.znacznik() == 'O') {
+            plansza[NajlepszyRuch.i][NajlepszyRuch.j] = 'O';
             iloscO[0]++;
-        }
+        }*/
+        plansza[NajlepszyRuch.i][NajlepszyRuch.j] = 'X';
+        iloscX[0]++;
     }
-    public static int minimax(char[][] plansza, int depth, boolean isMaximizing, int[] iloscX, int[] iloscO, char z, char zP) {
-        boolean result = stanGry(plansza, iloscX, iloscO);
 
-        if (result) {
-
+    public static int minimax(char[][] plansza, int depth, boolean isMaximizing) {
+        String x = stanGry(plansza);
+        switch (x) {
+            case "X wins":
+                return 10;
+            case "O wins":
+                return -10;
+            case "tie":
+                return 0;
         }
 
         if (isMaximizing) {
             int najlepszyWynik = Integer.MIN_VALUE;
-            int wynik;
             for (int i = 0; i < 3; i++ ) {
                 for (int j = 0; j < 3; j++) {
                     if (plansza[i][j] != 'X' && plansza[i][j] != 'O'){
-                        plansza[i][j] = z;
-                        wynik = minimax(plansza, depth + 1, false, iloscX, iloscO,z, zP);
+                        plansza[i][j] = 'X';
+                        int wynik = minimax(plansza, depth + 1, false);
                         plansza[i][j] = ' ';
-                        if (wynik > najlepszyWynik) {
-                            najlepszyWynik = wynik;
-                        }
+                        najlepszyWynik = max(wynik, najlepszyWynik);
                     }
                 }
             }
             return najlepszyWynik;
         } else {
             int najlepszyWynik = Integer.MAX_VALUE;
-            int wynik;
             for (int i = 0; i < 3; i++ ) {
                 for (int j = 0; j < 3; j++) {
                     if (plansza[i][j] != 'X' && plansza[i][j] != 'O'){
-                        plansza[i][j] = zP;
-                        wynik = minimax(plansza, depth + 1, true, iloscX, iloscO,z, zP);
+                        plansza[i][j] = 'O';
+                        int wynik = minimax(plansza, depth + 1, true);
                         plansza[i][j] = ' ';
-                        if (wynik < najlepszyWynik) {
-                            najlepszyWynik = wynik;
-                        }
+                        najlepszyWynik = min(wynik, najlepszyWynik);
                     }
                 }
             }
             return najlepszyWynik;
         }
     }
-    public class NajlepszyRuch {
-        public static int i;
-        public static int j;
-    }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        NajlepszyRuch najlepszyRuch = new NajlepszyRuch();
         char[][] plansza = new char[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 plansza[i][j] = ' ';
             }
         }
-        int[] iloscX = new int[1];
-        int[] iloscO = new int[1];
 
         while (true) {
             String initial = goodInput();
@@ -367,28 +358,33 @@ public class Main {
                 return;
             }
             wyswietlPlansze(plansza);
-            while (!stanGry(plansza, iloscX, iloscO)) {
-                if (initial.contains("start user")) {
-                    while (ruchGracza(iloscX, iloscO, plansza)) {
+            while (stanGry(plansza).equals("")) {
+                if ((initial).contains("start user")) {
+                    while (ruchGracza(plansza)) {
                     }
                 } else if (initial.contains("start easy")) {
-                    ruchBota(iloscO, iloscX, plansza);
+                    ruchBota(plansza);
                 } else if (initial.contains("start medium")) {
-                    ruchBotaMedium(iloscO, iloscX, plansza);
+                    ruchBotaMedium(plansza);
+                } else if (initial.contains("start hard")) {
+                    BestRuchBota(plansza);
                 }
                 wyswietlPlansze(plansza);
-                if (stanGry(plansza, iloscX, iloscO)) {
+                if (!stanGry(plansza).equals("")) {
+                    System.out.println(stanGry(plansza) + " wins");
                     break;
                 }
-                if (initial.contains("user user") || initial.contains("easy user") || initial.contains("medium user")) {
-                    ruchGracza(iloscX, iloscO, plansza);
+                if (initial.contains("user user") || initial.contains("easy user") || initial.contains("medium user") ||
+                        initial.contains("hard user")) {
+                    ruchGracza(plansza);
                 } else if (initial.contains("user easy") || initial.contains("easy easy") || initial.contains("medium easy")) {
-                    ruchBota(iloscO, iloscX, plansza);
+                    ruchBota(plansza);
                 } else if (initial.contains("user medium") || initial.contains("easy medium") || initial.contains("medium medium")) {
-                    ruchBotaMedium(iloscO, iloscX, plansza);
+                    ruchBotaMedium(plansza);
                 }
                 wyswietlPlansze(plansza);
-                if (stanGry(plansza, iloscX, iloscO)) {
+                if (!stanGry(plansza).equals("")) {
+                    System.out.println(stanGry(plansza));
                     break;
                 }
             }
